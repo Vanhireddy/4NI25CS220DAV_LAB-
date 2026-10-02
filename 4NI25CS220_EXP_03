@@ -1,0 +1,382 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPpJX07Tg3WLJxBHbibCpiU",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/Vanhireddy/4NI25CS220DAV_LAB-/blob/main/4NI25CS220_EXP_03\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "import pandas as pd\n",
+        "from sklearn.preprocessing import LabelEncoder\n",
+        "\n",
+        "df = pd.read_csv(\"/content/student_performance_dataset.csv\")\n",
+        "\n",
+        "print(\"First 5 rows of dataset:\")\n",
+        "print(df.head())\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "ODCAW2JE5NMn",
+        "outputId": "166476f4-7393-4d3a-8232-43ada13a11ee"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "First 5 rows of dataset:\n",
+            "  Student_ID  Gender  Study_Hours_per_Week  Attendance_Rate  Past_Exam_Scores  \\\n",
+            "0       S147    Male                    31        68.267841                86   \n",
+            "1       S136    Male                    16        78.222927                73   \n",
+            "2       S209  Female                    21        87.525096                74   \n",
+            "3       S458  Female                    27        92.076483                99   \n",
+            "4       S078  Female                    37        98.655517                63   \n",
+            "\n",
+            "  Parental_Education_Level Internet_Access_at_Home Extracurricular_Activities  \\\n",
+            "0              High School                     Yes                        Yes   \n",
+            "1                      PhD                      No                         No   \n",
+            "2                      PhD                     Yes                         No   \n",
+            "3                Bachelors                      No                         No   \n",
+            "4                  Masters                      No                        Yes   \n",
+            "\n",
+            "   Final_Exam_Score Pass_Fail  \n",
+            "0                63      Pass  \n",
+            "1                50      Fail  \n",
+            "2                55      Fail  \n",
+            "3                65      Pass  \n",
+            "4                70      Pass  \n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(\"\\nDataset Info:\")\n",
+        "print(df.info())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "bCHguevH8lJ8",
+        "outputId": "32681f3e-9c25-43bf-dc72-b49c79c40066"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "Dataset Info:\n",
+            "<class 'pandas.core.frame.DataFrame'>\n",
+            "RangeIndex: 708 entries, 0 to 707\n",
+            "Data columns (total 10 columns):\n",
+            " #   Column                      Non-Null Count  Dtype  \n",
+            "---  ------                      --------------  -----  \n",
+            " 0   Student_ID                  708 non-null    object \n",
+            " 1   Gender                      708 non-null    object \n",
+            " 2   Study_Hours_per_Week        708 non-null    int64  \n",
+            " 3   Attendance_Rate             708 non-null    float64\n",
+            " 4   Past_Exam_Scores            708 non-null    int64  \n",
+            " 5   Parental_Education_Level    708 non-null    object \n",
+            " 6   Internet_Access_at_Home     708 non-null    object \n",
+            " 7   Extracurricular_Activities  708 non-null    object \n",
+            " 8   Final_Exam_Score            708 non-null    int64  \n",
+            " 9   Pass_Fail                   708 non-null    object \n",
+            "dtypes: float64(1), int64(3), object(6)\n",
+            "memory usage: 55.4+ KB\n",
+            "None\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(\"\\nMissing values before handling:\")\n",
+        "print(df.isnull().sum())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "7IzXXjS44e3e",
+        "outputId": "f3b949cb-bd1b-45ea-8b97-2ea1d507f910"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "Missing values before handling:\n",
+            "Student_ID                    0\n",
+            "Gender                        0\n",
+            "Study_Hours_per_Week          0\n",
+            "Attendance_Rate               0\n",
+            "Past_Exam_Scores              0\n",
+            "Parental_Education_Level      0\n",
+            "Internet_Access_at_Home       0\n",
+            "Extracurricular_Activities    0\n",
+            "Final_Exam_Score              0\n",
+            "Pass_Fail                     0\n",
+            "dtype: int64\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "columns = [\n",
+        "    \"Study_Houres_per_Week\",\n",
+        "    \"Attendence_Rate\",\n",
+        "    \"Past_Exam_Scores\",\n",
+        "    \"Final_Exam_Score\"\n",
+        "]\n",
+        "\n",
+        "df.loc[df.index[0], columns] = None\n",
+        "\n",
+        "missing_values = df.isnull().sum()\n",
+        "\n",
+        "print(\"\\nMissing values after inserting sample NaNs:\")\n",
+        "print(missing_values[missing_values > 0])\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "3TmMrcG39KSW",
+        "outputId": "b472c9ac-b6f6-4278-95da-c1633a1d6b85"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "Missing values after inserting sample NaNs:\n",
+            "Past_Exam_Scores           1\n",
+            "Final_Exam_Score           1\n",
+            "Study_Houres_per_Week    708\n",
+            "Attendence_Rate          708\n",
+            "dtype: int64\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df[\"Attendence_Rate\"].fillna(\n",
+        "    df[\"Attendence_Rate\"].median(),\n",
+        "    inplace=True\n",
+        ")\n"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "T7lQHPRP9IOd",
+        "outputId": "ca86159a-0398-46d2-8b3f-e299b6574ed9"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stderr",
+          "text": [
+            "/usr/local/lib/python3.13/dist-packages/numpy/lib/_nanfunctions_impl.py:1241: RuntimeWarning: Mean of empty slice\n",
+            "  return np.nanmean(a, axis, out=out, keepdims=keepdims)\n",
+            "/tmp/ipykernel_1218/4076793426.py:1: FutureWarning: A value is trying to be set on a copy of a DataFrame or Series through chained assignment using an inplace method.\n",
+            "The behavior will change in pandas 3.0. This inplace method will never work because the intermediate object on which we are setting values always behaves as a copy.\n",
+            "\n",
+            "For example, when doing 'df[col].method(value, inplace=True)', try using 'df.method({col: value}, inplace=True)' or df[col] = df[col].method(value) instead, to perform the operation inplace on the original object.\n",
+            "\n",
+            "\n",
+            "  df[\"Attendence_Rate\"].fillna(\n",
+            "/tmp/ipykernel_1218/4076793426.py:1: FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. Call result.infer_objects(copy=False) instead. To opt-in to the future behavior, set `pd.set_option('future.no_silent_downcasting', True)`\n",
+            "  df[\"Attendence_Rate\"].fillna(\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df['Past_Exam_Scores'] = df['Past_Exam_Scores'].ffill()"
+      ],
+      "metadata": {
+        "id": "ZisXodJB8guG"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "print(\"\\nMissing values after imputation:\")\n",
+        "print(df.isnull().sum())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "V6MVsJBa8g9n",
+        "outputId": "7a370197-49c7-4f53-c698-2521342dd910"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "Missing values after imputation:\n",
+            "Student_ID                      0\n",
+            "Gender                          0\n",
+            "Study_Hours_per_Week            0\n",
+            "Attendance_Rate                 0\n",
+            "Past_Exam_Scores                1\n",
+            "Parental_Education_Level        0\n",
+            "Internet_Access_at_Home         0\n",
+            "Extracurricular_Activities      0\n",
+            "Final_Exam_Score                1\n",
+            "Pass_Fail                       0\n",
+            "Study_Houres_per_Week         708\n",
+            "Attendence_Rate               708\n",
+            "dtype: int64\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df = pd.get_dummies(df, columns=['Parental_Education_Level'])\n",
+        "print(\"\\nOne-Hot Encoded columns:\")\n",
+        "print(df.columns.tolist())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "fgeihPcS8hBW",
+        "outputId": "fd1722a5-4c0a-4988-d527-47d071b3ce3e"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "One-Hot Encoded columns:\n",
+            "['Student_ID', 'Gender', 'Study_Hours_per_Week', 'Attendance_Rate', 'Past_Exam_Scores', 'Internet_Access_at_Home', 'Extracurricular_Activities', 'Final_Exam_Score', 'Pass_Fail', 'Study_Houres_per_Week', 'Attendence_Rate', 'Parental_Education_Level_Bachelors', 'Parental_Education_Level_High School', 'Parental_Education_Level_Masters', 'Parental_Education_Level_PhD']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "le = LabelEncoder()\n",
+        "df['Pass_Fail_Encoded'] = le.fit_transform(df['Pass_Fail'])\n",
+        "print(\"\\nLabel Encoded Result:\")\n",
+        "print(df[['Pass_Fail', 'Pass_Fail_Encoded']].head())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "KGPx69kd-M_m",
+        "outputId": "7c40ba0a-c27f-4860-b2f4-d7e82df226cf"
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "Label Encoded Result:\n",
+            "  Pass_Fail  Pass_Fail_Encoded\n",
+            "0      Pass                  1\n",
+            "1      Fail                  0\n",
+            "2      Fail                  0\n",
+            "3      Pass                  1\n",
+            "4      Pass                  1\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df['Gender_Encoded'] = le.fit_transform(df['Gender'])\n",
+        "df['Internet_Access_Encoded'] = le.fit_transform(df['Internet_Access_at_Home'])\n",
+        "df['Extracurricular_Encoded'] = le.fit_transform(df['Extracurricular_Activities'])"
+      ],
+      "metadata": {
+        "id": "fFWKT9TV-NIO"
+      },
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "df.to_csv(\"student_performance_dataset (2).csv\", index=False)\n",
+        "print(\"\\nCleaned dataset saved as 'student_performance_dataset (2).csv'\")\n"
+      ],
+      "metadata": {
+        "id": "p_w0gHhNDnDH",
+        "outputId": "79fc1257-d4a8-43b8-d72f-6d1a5d78b95e",
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        }
+      },
+      "execution_count": null,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "\n",
+            "Cleaned dataset saved as 'student_performance_dataset (2).csv'\n"
+          ]
+        }
+      ]
+    }
+  ]
+}
